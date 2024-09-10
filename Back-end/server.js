@@ -5,7 +5,7 @@ const cookieParser = require('cookie-parser');
 const passport = require('passport');
 const authRoutes = require('./Routes/authRoutes.js');
 
-// require('passportConfig'); // Import passport strategies
+require('passportConfig'); // Import passport strategies
 const app = express();
 
 
@@ -23,10 +23,9 @@ app.get('/',(req,res)=>{
 app.use('/api/auth', authRoutes);
 
 
-app.listen(4000);
-// app.listen(process.env.PORT,()=>{
-//     console.log(`listening to port ${process.env.PORT}`)
-// });
+app.listen(process.env.PORT,()=>{
+    console.log(`listening to port ${process.env.PORT}`)
+});
 
 
 
