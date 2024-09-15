@@ -1,6 +1,6 @@
 const express = require('express');
 require('dotenv').config();
-
+const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const passport = require('passport');
 const authRoutes = require('./Routes/authRoutes.js');
@@ -14,6 +14,11 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 app.use(passport.initialize());
+
+//DATABASE CONNECTION
+mongoose.connect(process.env.DB_URI)
+.then(() => console.log('MongoDB connected'))
+.catch(err => console.error('MongoDB connection error:', err));
 
 
 app.get('/',(req,res)=>{
