@@ -4,8 +4,9 @@ require('dotenv').config();
 const cookieParser = require('cookie-parser');
 const passport = require('passport');
 const authRoutes = require('./Routes/authRoutes.js');
+const postRouters = require('./Routes/postRoutes.js');
 
-require('passportConfig'); // Import passport strategies
+require('./Config/passportConfig.js'); // Import passport strategies
 const app = express();
 
 
@@ -21,6 +22,7 @@ app.get('/',(req,res)=>{
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/post', postRouters);
 
 
 app.listen(process.env.PORT,()=>{
