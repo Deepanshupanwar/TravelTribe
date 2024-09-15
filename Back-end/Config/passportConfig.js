@@ -2,7 +2,7 @@ const passport = require('passport');
 // const FacebookStrategy = require('passport-facebook').Strategy;
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const jwt = require('jsonwebtoken');
-const User = require('./Models/UserTraveller'); // Import user schema
+const User = require('../Models/UserTraveller'); // Import user schema
 
 // Serialize user into session
 passport.serializeUser((user, done) => done(null, user.id));

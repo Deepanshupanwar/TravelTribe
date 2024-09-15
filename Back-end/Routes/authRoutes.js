@@ -4,7 +4,7 @@ const passport = require('passport');
 const { register, login, logout
     // , facebookCallback
     , googleCallback 
-} = require('../controllers/authController');
+} = require('../Controllers/authController');
 
 // Local Authentication Routes
 router.post('/register', register);

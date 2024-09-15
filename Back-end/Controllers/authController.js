@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../Models/UserTraveller');
-const { generateToken } = require('../passportConfig');
+const { generateToken } = require('../Config/passportConfig');
 
 // Register a new user
 exports.register = async (req, res) => {
