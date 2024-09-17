@@ -46,10 +46,6 @@ const userSchema = new mongoose.Schema({
       default: 0,
     },
   },
-  travel_buddy_posts: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'TravelBuddyPost',
-  }],
   hosting_requests: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'HostingOffer',
@@ -57,11 +53,6 @@ const userSchema = new mongoose.Schema({
   reviews: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Reviews',
-  }],
-
-  experiences:[{
-    type:mongoose.Schema.Types.ObjectId,
-    ref: 'ExperienceBlog',
   }],
   created_at: {
     type: Date,

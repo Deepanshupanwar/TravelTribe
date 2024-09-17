@@ -3,6 +3,9 @@ const router = express.Router();
 const {submit, searchByDate, searchByLocation, update, deletePost, getAll} = require('../Controllers/postController');
 const {requireAuth} = require('../Middlewares/authMiddleware');
 
+
+//some routes need params which will be added later on
+
 router.post('/submit' ,requireAuth ,submit);
 
 router.get('/get',getAll);

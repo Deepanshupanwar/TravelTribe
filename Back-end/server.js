@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const passport = require('passport');
 const authRoutes = require('./Routes/authRoutes.js');
 const postRouters = require('./Routes/postRoutes.js');
+const expRouters = require('./Routes/expRoutes.js'); 
 
 require('./Config/passportConfig.js'); // Import passport strategies
 const app = express();
@@ -28,6 +29,7 @@ app.get('/',(req,res)=>{
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/post', postRouters);
+app.use('/api/experience', expRouters)
 
 
 app.listen(process.env.PORT,()=>{
