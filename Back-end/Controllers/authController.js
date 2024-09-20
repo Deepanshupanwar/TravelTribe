@@ -6,11 +6,11 @@ const { generateToken } = require('../Config/passportConfig');
 exports.register = async (req, res) => {
     // console.log("register working");
     // res.send("hello register");
-  const { name, email, password } = req.body;
+  const { username, email, password } = req.body;
   const existingUser = await User.findOne({ email });
   if (existingUser) return res.status(400).json({ message: 'Email already exists!' });
 
-  const user = new User({ name, email, password });
+  const user = new User({ username, email, password });
   await user.save();
 
   const token = generateToken(user);
@@ -24,7 +24,13 @@ exports.login = async (req, res) => {
     // res.send("u log in ");
   const { email, password } = req.body;
   const user = await User.findOne({ email });
-  if (!user || !(await user.comparePassword(password))) {
+  console.log(user);
+
+  /* THIS BELOW IS NEEDED TO BE CHANGED THE AUNTHEICATION FUCNTION !!! PASSWROD CHECKER */
+  // if (!user || !(await user.comparePassword(password))) {
+  //   return res.status(400).json({ message: 'Invalid credentials' });
+  // }
+  if (!user || !(await user.password===(password))) {
     return res.status(400).json({ message: 'Invalid credentials' });
   }
 
@@ -42,9 +48,11 @@ exports.login = async (req, res) => {
 
 // Google OAuth callback
 exports.googleCallback = async (req, res) => {
+  console.log("inside googlecallback");
+  console.log(req.user);
   const token = generateToken(req.user);
   res.cookie('jwt', token, { httpOnly: true });
-  res.redirect('/dashboard'); // Redirect to the dashboard or homepage
+  res.redirect('/'); // Redirect to the dashboard or homepage
 };
 
 // Logout

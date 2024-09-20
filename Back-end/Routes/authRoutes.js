@@ -15,7 +15,7 @@ router.get('/logout', logout);
 // router.get('/auth/facebook', passport.authenticate('facebook', { scope: ['email'] }));
 // router.get('/auth/facebook/callback', passport.authenticate('facebook', { failureRedirect: '/login' }), facebookCallback);
 
-router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
-router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), googleCallback);
+router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+router.get('/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), googleCallback);
 
 module.exports = router;

@@ -31,17 +31,18 @@ passport.deserializeUser((id, done) => {
 //   done(null, user);
 // }));
 
-// Google OAuth strategy
+/* Google OAuth strategy*/
 passport.use(new GoogleStrategy({
-  clientID: process.env.GOOGLE_CLIENT_ID,
-  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: "/auth/google/callback"
+  clientID: process.env.CLIENT_ID,
+  clientSecret: process.env.CLIENT_SECRET,
+  callbackURL: "http://localhost:4000/api/auth/google/callback"
 }, async (accessToken, refreshToken, profile, done) => {
+  console.log("google O auth called")
   let user = await User.findOne({ googleId: profile.id });
   if (!user) {
     user = new User({
       googleId: profile.id,
-      name: profile.displayName,
+      username: profile.displayName,
       email: profile.emails[0].value
     });
     await user.save();
@@ -52,9 +53,13 @@ passport.use(new GoogleStrategy({
 // JWT Token creation helper function
 exports.generateToken = (user) => {
   return jwt.sign(
-    { id: user._id, 
-      name: user.name 
-    }, process.env.ACCESS_TOKEN_SECRET, {
-    expiresIn: process.env.ACCESS_TOKEN_EXPIRY
-  });
+    { 
+      id: user._id, 
+      username: user.username 
+    }, 
+    process.env.ACCESS_TOKEN_SECRET, 
+    {
+      expiresIn: process.env.ACCESS_TOKEN_EXPIRY
+    }
+  );
 };
