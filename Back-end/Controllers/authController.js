@@ -1,4 +1,3 @@
-const jwt = require("jsonwebtoken");
 const User = require("../Models/UserTraveller");
 const { generateToken } = require("../Config/passportConfig");
 
@@ -21,7 +20,7 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
-  console.log(user);
+  console.log("login controller",user);
 
   /* THIS BELOW IS NEEDED TO BE CHANGED THE AUNTHEICATION FUCNTION !!! PASSWROD CHECKER */
   if (!user || !((await user.password) === password)) {    //!(await user.comparePassword(password))
@@ -35,10 +34,10 @@ exports.login = async (req, res) => {
 // Google OAuth callback
 exports.googleCallback = async (req, res) => {
   console.log("inside googlecallback auth controller ");
-  console.log(req.user);
+  // console.log(req.user);
   const token = generateToken(req.user);
   res.cookie("jwt", token, { httpOnly: true });
-  res.redirect("http://localhost:4000/home"); // Redirect to the dashboard or homepage
+  res.redirect(`${process.env.PORT}/home`); // Redirect to the dashboard or homepage
 };
 
 // Logout
@@ -46,10 +45,3 @@ exports.logout = (req, res) => {
   res.cookie("jwt", "", { maxAge: 1 });
   res.status(200).json({ message: "Logged out successfully" });
 };
-
-// Facebook OAuth callback
-// exports.facebookCallback = async (req, res) => {
-//   const token = generateToken(req.user);
-//   res.cookie('jwt', token, { httpOnly: true });
-//   res.redirect('/dashboard'); // Redirect to the dashboard or homepage
-// };

@@ -6,12 +6,12 @@ const passport = require('passport');
 const authRoutes = require('./Routes/authRoutes.js');
 const postRouters = require('./Routes/postRoutes.js');
 const expRouters = require('./Routes/expRoutes.js'); 
-
 const session = require('express-session');
-
 require('./Config/passportConfig.js'); // Import passport strategies
 const app = express();
 
+// const cors = require('cors');
+// app.use(cors({ origin: process.env.PORT, credentials: true }));
 
 // Middlewares
 app.use(express.json());

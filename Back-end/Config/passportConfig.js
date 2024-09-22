@@ -1,5 +1,4 @@
 const passport = require('passport');
-// const FacebookStrategy = require('passport-facebook').Strategy;
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const jwt = require('jsonwebtoken');
 const User = require('../Models/UserTraveller');
@@ -13,6 +12,7 @@ passport.deserializeUser(async (id, done) => {
     const user = await User.findById(id);  // Use async/await
     done(null, user);
   } catch (err) {
+    console.error("Error deserializing user:", err);
     done(err, null);
   }
 });
@@ -24,15 +24,29 @@ passport.use(new GoogleStrategy({
   callbackURL: "http://localhost:4000/api/auth/google/callback"
 }, async (accessToken, refreshToken, profile, done) => {
   console.log("google O auth called in passport config", profile._json.picture);
-  let user = await User.findOne({ googleId: profile.id });
-  if (!user) {
+  const [user, user2] = await Promise.all([
+    User.findOne({ googleId: profile.id }),
+    User.findOne({ email: profile.emails[0].value })
+  ]);
+  if (!user && !user2) {
     user = new User({
       googleId: profile.id,
       username: profile.displayName,
       email: profile.emails[0].value,
-      profile_picture:profile._json.picture
+      profile_picture: profile._json.picture
     });
     await user.save();
+  }
+  else if (!user && user2) {
+    // if google auth do no exist and normal register exist put google ID into the register document along with other details
+    // also if picture value is empty add it from google auth
+
+    user2.googleId = profile.id;
+    if (!user2.profile_picture) {
+      user2.profile_picture = profile._json.picture;
+    }
+    await user2.save();
+    user = user2;
   }
   done(null, user);
 }));
@@ -40,37 +54,13 @@ passport.use(new GoogleStrategy({
 // JWT Token creation helper function
 exports.generateToken = (user) => {
   return jwt.sign(
-    { 
-      id: user._id, 
-      username: user.username 
-    }, 
-    process.env.ACCESS_TOKEN_SECRET, 
+    {
+      id: user._id,
+      username: user.username
+    },
+    process.env.ACCESS_TOKEN_SECRET,
     {
       expiresIn: process.env.ACCESS_TOKEN_EXPIRY
     }
   );
 };
-
-
-
-
-
-
-
-// passport.use(new FacebookStrategy({
-//   clientID: process.env.FACEBOOK_CLIENT_ID,
-//   clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
-//   callbackURL: "/auth/facebook/callback",
-//   profileFields: ['id', 'displayName', 'emails']
-// }, async (accessToken, refreshToken, profile, done) => {
-//   let user = await User.findOne({ facebookId: profile.id });
-//   if (!user) {
-//     user = new User({
-//       facebookId: profile.id,
-//       name: profile.displayName,
-//       email: profile.emails[0].value
-//     });
-//     await user.save();
-//   }
-//   done(null, user);
-// }));
