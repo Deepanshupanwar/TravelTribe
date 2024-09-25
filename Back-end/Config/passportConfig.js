@@ -23,7 +23,7 @@ passport.use(new GoogleStrategy({
   clientSecret: process.env.CLIENT_SECRET,
   callbackURL: "http://localhost:4000/api/auth/google/callback"
 }, async (accessToken, refreshToken, profile, done) => {
-  console.log("google O auth called in passport config", profile._json.picture);
+  // console.log("google O auth called in passport config", profile._json.picture);
   const [user, user2] = await Promise.all([
     User.findOne({ googleId: profile.id }),
     User.findOne({ email: profile.emails[0].value })

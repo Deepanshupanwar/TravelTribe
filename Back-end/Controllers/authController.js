@@ -37,7 +37,7 @@ exports.googleCallback = async (req, res) => {
   // console.log(req.user);
   const token = generateToken(req.user);
   res.cookie("jwt", token, { httpOnly: true });
-  res.redirect(`${process.env.PORT}/home`); // Redirect to the dashboard or homepage
+  res.redirect(`/home`); // Redirect to the dashboard or homepage
 };
 
 // Logout

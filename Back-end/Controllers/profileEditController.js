@@ -3,6 +3,7 @@ const User = require('../Models/UserTraveller');
 
 // Update user profile
 exports.editProfile = async (req, res) => {
+    console.log("inside the PUT /profile -> the editor");
     try {
         const userId = req.user.id; // Get the authenticated user's ID
         const { username, email, profile_picture } = req.body; // Destructure the fields you want to allow for updating
@@ -29,6 +30,7 @@ exports.editProfile = async (req, res) => {
 
 // Delete user profile
 exports.deleteProfile = async (req, res) => {
+    console.log("inside the delete /profile -> the delte user ");
     try {
         const userId = req.user.id; // Get the authenticated user's ID
 
