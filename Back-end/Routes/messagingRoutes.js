@@ -30,7 +30,6 @@ router.get('/conversation/:userId', requireAuth, async (req, res) => {
   try {
     const otherUserId = req.params.userId;
     const userId = req.user.id; // Current authenticated user
-
     // Find all messages between the two users (both sent and received)
     const messages = await Message.find({
       $or: [

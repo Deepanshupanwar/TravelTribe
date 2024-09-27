@@ -17,6 +17,8 @@ const { createServer } = require('node:http');
 const server = createServer(app);
 const io = new Server(server);
 // cors
+const cors = require('cors');
+// app.use(cors());
 // Middlewares
 app.use(express.json());
 app.use(cookieParser());
@@ -33,7 +35,6 @@ app.use(session({
 }));
 
 app.use(passport.session());
-
 //DATABASE CONNECTION
 mongoose.connect(process.env.DB_URI)
   .then(() => console.log('MongoDB connected'))
@@ -59,40 +60,52 @@ app.use('/api/experience', expRouters)
 app.get('/chattest', (req, res) => {
   res.sendFile(join(__dirname, 'index.html'));
 });
-// io.on('connection', (socket) => {
-//   console.log('a user connected');
-//   socket.on('chat message', (msg) => {
-//     console.log('type');
-//     io.emit('chat message', msg); // Broadcast the message to all connected clients
-//   });
-//   socket.on('hello', (arg) => {
-//     console.log(arg); // 'world'
-//   });
-// });
-
-
-
+const users = {};
 io.on('connection', (socket) => {
-  console.log('New client connected');
-  // Listen for messages from the client
-  socket.on('sendMessage', async ({ sender_id, receiver_id, message_text }) => {
-    const message = new Message({
-      sender_id,
-      receiver_id,
-      message_text
+    console.log('New client connected');
+    // Register user when they connect
+    socket.on('register', (username) => {
+        users[socket.id] = username;
+        console.log(socket.id,`${username} , , has joined the chat.`);
     });
-    await message.save();
-    // Emit the message to the receiver
-    io.emit(`message:${receiver_id}`, message);
-  });
-  socket.on('disconnect', () => {
-    console.log('Client disconnected');
-  });
+    // Listen for messages from the client
+    socket.on('private message', async ({recipientUsername, message_text }) => {
+        try {
+            const message = new Message({
+                sender_id:socket.id,
+                receiver_id:recipientUsername,
+                message_text
+            });
+            console.log(message)
+            //when we get the method to get users mongo id in above meesge we can save them as model only accept obj ids
+            // await message.save();     
+            
+            
+            // Emit the message to the specific receiver
+            const receiverSocketId = Object.keys(users).find(key => users[key] === recipientUsername);
+            console.log(receiverSocketId ,"---reciever ");
+            if (receiverSocketId) {
+                io.to(receiverSocketId).emit("private message",{
+                  message:message.message_text,
+                  sender:recipientUsername }
+                );
+                io.to(socket.id).emit("private message",{
+                  message:message.message_text,
+                  sender:"you" }
+                );
+              }
+        } catch (error) {
+            console.error('Error sending message:', error);
+        }
+    });
+    socket.on('disconnect', () => {
+      const disconnectedUser = users[socket.id];
+      if (disconnectedUser) {
+          console.log(`${disconnectedUser} XXXXXXXdisconnected withXXXXXXXXXsocket ID: ${socket.id}`);
+          delete users[socket.id]; // Remove the user from the list
+      }
+    });
 });
-
-
-
 server.listen(process.env.PORT, () => {
   console.log(`listening to port ${process.env.PORT}`)
 });
-// https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=295925589376-m51jed0pabqoodsj8hdllu8oifqipap4.apps.googleusercontent.com&redirect_uri=http://localhost:4000/api/auth/google/callback&scope=profile email&access_type=offline

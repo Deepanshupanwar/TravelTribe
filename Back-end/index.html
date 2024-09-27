@@ -9,6 +9,9 @@
       #form { background: rgba(0, 0, 0, 0.15); padding: 0.25rem; position: fixed; bottom: 0; left: 0; right: 0; display: flex; height: 3rem; box-sizing: border-box; backdrop-filter: blur(10px); }
       #input { border: none; padding: 0 1rem; flex-grow: 1; border-radius: 2rem; margin: 0.25rem; }
       #input:focus { outline: none; }
+
+      #senderid { border: none; padding: 0 1rem; border-radius: 2rem; margin: 0.25rem; }
+      #senderid:focus { outline: none; }
       #form > button { background: #333; border: none; padding: 0 1rem; margin: 0.25rem; border-radius: 3px; outline: none; color: #fff; }
 
       #messages { list-style-type: none; margin: 0; padding: 0; }
@@ -18,36 +21,37 @@
   </head>
   <body>
     <ul id="messages"></ul>
-    <form id="form" action="">
-      <input id="input" autocomplete="off" /><button>Send</button>
+    <form id="form" action="">       
+      <input id="recieve" placeholder="Recipient username" />
+        <div id="registration"></div>
+            <input id="senderid" placeholder="Enter your username">
+            <button onclick="registerUser()">Join Chat</button>
+        </div>
+      <input id="input" autocomplete="off" /><button onclick="sendMessage()">Send</button>
     </form>
     <script src="/socket.io/socket.io.js"></script>
     <script>
       const socket = io();
-    
-      const form = document.getElementById('form');
-      const input = document.getElementById('input');
-      const messages = document.getElementById('messages');
-    
-      form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        if (input.value) {
-          socket.emit('chat message', input.value);
-          input.value = '';
+      let username;
+      function registerUser() {
+            username = document.getElementById('senderid').value;
+            socket.emit('register', username);
+            document.getElementById('registration').style.display = 'none';
+            // document.getElementById('messages').style.display = 'block';
+            event.preventDefault(); // Prevent form submission
         }
-      });
-
-   
-      socket.on('chat message', (msg) => {
-        console.log(msg); 
-        const item = document.createElement('li');
-        item.textContent = msg;
-        socket.emit('hello', msg);
-        messages.appendChild(item);
-        window.scrollTo(0, document.body.scrollHeight);
-      });
-
-      
+        function sendMessage() {
+            const recipientUsername = document.getElementById('recieve').value;
+            const message_text = document.getElementById('input').value;
+            socket.emit('private message', { recipientUsername, message_text });
+            document.getElementById('input').value = '';
+            event.preventDefault(); // Prevent form submission
+        }
+        socket.on('private message', ({ message, sender }) => {
+            const item = document.createElement('li');
+            item.textContent = `${sender}: ${message}`;
+            document.getElementById('messages').appendChild(item);
+        });
     </script>
   </body>
 </html>
