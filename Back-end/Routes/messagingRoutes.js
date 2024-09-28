@@ -16,9 +16,7 @@ router.post('/send', requireAuth, async (req, res) => {
       message_text
     });
     console.log(" messgage sent ", message);
-
     await message.save();
-
     res.status(201).json({ message: "Message sent", data: message });
   } catch (error) {
     res.status(500).json({ message: "Error sending message", error });
