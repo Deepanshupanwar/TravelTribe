@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
+const SALT_ROUNDS = 10;
 
 const userSchema = new mongoose.Schema({
   username: {
@@ -64,6 +66,34 @@ const userSchema = new mongoose.Schema({
     default: Date.now,
   }
 });
+
+
+
+// Pre-save hook to hash the password before saving
+userSchema.pre('save', async function (next) {
+  const user = this;
+
+  // Only hash the password if it's new or being modified
+  if (user.isModified('password') || user.isNew) {
+    try {
+      // Generate salt and hash the password
+      const salt = await bcrypt.genSalt(SALT_ROUNDS);
+      const hashedPassword = await bcrypt.hash(user.password, salt);
+      user.password = hashedPassword;
+      next();
+    } catch (error) {
+      return next(error);
+    }
+  } else {
+    next();
+  }
+});
+
+// Method to compare password for login
+userSchema.methods.comparePassword = async function (candidatePassword) {
+  return await bcrypt.compare(candidatePassword, this.password);
+};
+
 
 module.exports = mongoose.model('UserTraveller', userSchema);
 

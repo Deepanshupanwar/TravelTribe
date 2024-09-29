@@ -23,7 +23,7 @@ exports.login = async (req, res) => {
   console.log("login controller",user);
 
   /* THIS BELOW IS NEEDED TO BE CHANGED THE AUNTHEICATION FUCNTION !!! PASSWROD CHECKER */
-  if (!user || !((await user.password) === password)) {    //!(await user.comparePassword(password))
+  if (!user || !(await user.comparePassword(password))){    //!(await user.comparePassword(password))
     return res.status(400).json({ message: "Invalid credentials" });
   }
   const token = generateToken(user);

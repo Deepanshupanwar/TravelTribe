@@ -27,6 +27,8 @@ const initSockets = (server) => {
 
         /*  message.save is left but that is after I figure out how to auntheticate userses and fetch their 
         mongodbinique id and then save into database, not hard but for now cahtting fuinctionalit shows
+
+        front end deepansu will do this job of fetching id and sendig it here in backend
         await message.save();
         */
 
